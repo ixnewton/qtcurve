@@ -28,6 +28,7 @@
 #include <qglobal.h>
 #include <QMap>
 #include <QFile>
+#include <QDir>
 #include <QTextStream>
 #include <QSvgRenderer>
 #include <QPainter>
@@ -45,6 +46,36 @@
 #define VERSION_KEY "version"
 
 #define TO_LATIN1(A) A.toLatin1().constData()
+
+// Qt6-specific config directory helper
+const char* getQt6ConfDir()
+{
+    static QByteArray dirBytes;
+    if (dirBytes.isEmpty()) {
+        QString dir;
+        // Check for Qt6Curve-specific config dir first
+        const char *env_home = getenv("QT6CURVE_CONFIG_DIR");
+        if (env_home && *env_home == '/') {
+            dir = QString::fromLocal8Bit(env_home);
+            if (!dir.endsWith('/'))
+                dir += '/';
+        } else {
+            // Use qt6curve subdirectory instead of qtcurve
+            const char *xdg_config = getenv("XDG_CONFIG_HOME");
+            if (xdg_config && *xdg_config == '/') {
+                dir = QString::fromLocal8Bit(xdg_config) + "/qt6curve/";
+            } else {
+                dir = QDir::homePath() + "/.config/qt6curve/";
+            }
+        }
+        // Ensure directory exists
+        QDir().mkpath(dir);
+        dirBytes = dir.toLocal8Bit();
+        qDebug() << "Qt6Curve config directory:" << dir;
+    }
+    return dirBytes.constData();
+}
+
 static QString
 determineFileName(const QString &file)
 {
@@ -1073,12 +1104,17 @@ void qtcCheckConfig(Options *opts)
 bool qtcReadConfig(const QString &file, Options *opts, Options *defOpts, bool checkImages)
 {
     if (file.isEmpty()) {
-        const char *env=getenv("QTCURVE_CONFIG_FILE");
+        // Check for Qt6Curve-specific config file first, then fall back to QtCurve
+        const char *env=getenv("QT6CURVE_CONFIG_FILE");
+        if (nullptr == env) {
+            env = getenv("QTCURVE_CONFIG_FILE");
+        }
 
         if (nullptr != env) {
             return qtcReadConfig(env, opts, defOpts);
         } else {
-            const char *cfgDir=QtCurve::getConfDir();
+            // Use Qt6-specific config directory
+            const char *cfgDir=getQt6ConfDir();
             if(cfgDir) {
                 QString filename(QFile::decodeName(cfgDir) + CONFIG_FILE);
 
@@ -2179,7 +2215,8 @@ static const char * toStr(ETBarBtn tb)
 bool qtcWriteConfig(KConfig *cfg, const Options &opts, const Options &def, bool exportingStyle)
 {
     if (!cfg) {
-        const char *cfgDir=QtCurve::getConfDir();
+        // Use Qt6-specific config directory
+        const char *cfgDir=getQt6ConfDir();
 
         if (cfgDir) {
             KConfig defCfg(QFile::decodeName(cfgDir) +

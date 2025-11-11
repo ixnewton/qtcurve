@@ -6365,11 +6365,12 @@ QSize Style::sizeFromContents(ContentsType type, const QStyleOption *option, con
         if (inStatusBar) {
             // Compact sizing for status bar context (similar to Breeze)
             int frameWidth = pixelMetric(PM_ComboBoxFrameWidth, option, widget);
-            // Ensure height accommodates text without clipping
-            int minHeight = option->fontMetrics.height() + 4; // Add padding for text
+            // Ensure height accommodates text without clipping - use 2*frameWidth like Breeze
+            int minHeight = option->fontMetrics.height() + 2 * frameWidth;
             newSize.setHeight(qMax(newSize.height(), minHeight));
-            newSize = QSize(newSize.width() + frameWidth * 2 + 20, 
-                           newSize.height() + frameWidth * 2);
+            // Add frame width margins and arrow button space
+            newSize = QSize(newSize.width() + 2 * frameWidth + 20, 
+                           newSize.height() + 2 * frameWidth);
         } else {
             // Standard sizing for normal context
             int  margin = (pixelMetric(PM_ButtonMargin, option, widget)+

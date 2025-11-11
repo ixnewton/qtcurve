@@ -42,6 +42,7 @@ void qtcCheckConfig(Options *opts);
 bool qtcReadConfig(const QString &file, Options *opts, Options *defOpts=nullptr,
                    bool checkImages=true);
 WindowBorders qtcGetWindowBorderSize(bool force);
+const char* getQt6ConfDir();
 
 #ifdef CONFIG_WRITE
 class KConfig;
