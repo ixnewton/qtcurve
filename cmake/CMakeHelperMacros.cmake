@@ -44,9 +44,9 @@ include(CMakePathMacros)
 ## reconfigure
 macro(__cmake_utils_reconf_on_foreach)
   string(MD5 fname "${__cmake_utils_reconf_on_value}")
-  configure_file("${__cmake_utils_reconf_on_value}"
-    "${reconf_cache}/${fname}" COPYONLY)
-  # file(REMOVE "${reconf_cache}/${fname}")
+  if(EXISTS "${__cmake_utils_reconf_on_value}")
+    configure_file("${__cmake_utils_reconf_on_value}" "${reconf_cache}/${fname}" COPYONLY)
+  endif()
 endmacro()
 
 # cmake_utils_reconf_on([filenames...])

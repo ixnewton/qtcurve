@@ -55,6 +55,7 @@
 #include <QMenuBar>
 #include <QMouseEvent>
 #include <QScrollBar>
+#include <QStatusBar>
 #include <QWizard>
 #include <QDialogButtonBox>
 #include <QPushButton>
@@ -6356,23 +6357,39 @@ QSize Style::sizeFromContents(ContentsType type, const QStyleOption *option, con
         newSize.setWidth(newSize.width() + 4);
 
         auto combo = styleOptCast<QStyleOptionComboBox>(option);
-        int  margin = (pixelMetric(PM_ButtonMargin, option, widget)+
-                       (pixelMetric(PM_DefaultFrameWidth, option, widget) * 2))-MAX_ROUND_BTN_PAD,
-            textMargins = 2*(pixelMetric(PM_FocusFrameHMargin) + 1),
-            // QItemDelegate::sizeHint expands the textMargins two times, thus the 2*textMargins...
-            other = qMax(opts.buttonEffect != EFFECT_NONE ? 20 : 18,
-                         2 * textMargins +
-                         pixelMetric(QStyle::PM_ScrollBarExtent,
-                                     option, widget));
-        bool editable=combo ? combo->editable : false;
-        newSize+=QSize(margin+other, margin-2);
-        newSize.rheight() += ((1 - newSize.rheight()) & 1);
+        
+        // Check if combo box is in a status bar - use more compact sizing
+        bool inStatusBar = widget && (qtcCheckType<QStatusBar>(widget->parentWidget()) ||
+                                      qtcCheckType(widget->parentWidget(), "DolphinStatusBar"));
+        
+        if (inStatusBar) {
+            // Compact sizing for status bar context (similar to Breeze)
+            int frameWidth = pixelMetric(PM_ComboBoxFrameWidth, option, widget);
+            // Ensure height accommodates text without clipping
+            int minHeight = option->fontMetrics.height() + 4; // Add padding for text
+            newSize.setHeight(qMax(newSize.height(), minHeight));
+            newSize = QSize(newSize.width() + frameWidth * 2 + 20, 
+                           newSize.height() + frameWidth * 2);
+        } else {
+            // Standard sizing for normal context
+            int  margin = (pixelMetric(PM_ButtonMargin, option, widget)+
+                           (pixelMetric(PM_DefaultFrameWidth, option, widget) * 2))-MAX_ROUND_BTN_PAD,
+                textMargins = 2*(pixelMetric(PM_FocusFrameHMargin) + 1),
+                // QItemDelegate::sizeHint expands the textMargins two times, thus the 2*textMargins...
+                other = qMax(opts.buttonEffect != EFFECT_NONE ? 20 : 18,
+                             2 * textMargins +
+                             pixelMetric(QStyle::PM_ScrollBarExtent,
+                                         option, widget));
+            bool editable=combo ? combo->editable : false;
+            newSize+=QSize(margin+other, margin-2);
+            newSize.rheight() += ((1 - newSize.rheight()) & 1);
 
-        if (!opts.etchEntry && opts.buttonEffect != EFFECT_NONE && editable)
-            newSize.rheight()-=2;
-        // KWord's zoom combo clips 'Fit Page Width' without the following...
-        if(editable)
-            newSize.rwidth()+=6;
+            if (!opts.etchEntry && opts.buttonEffect != EFFECT_NONE && editable)
+                newSize.rheight()-=2;
+            // KWord's zoom combo clips 'Fit Page Width' without the following...
+            if(editable)
+                newSize.rwidth()+=6;
+        }
         break;
     }
     case CT_MenuItem:
@@ -6465,6 +6482,50 @@ QSize Style::sizeFromContents(ContentsType type, const QStyleOption *option, con
             newSize = size + QSize((windowsItemHMargin * 4) + 2,
                                    windowsItemVMargin + 1);
         break;
+    case CT_ProgressBar: {
+        if (auto bar = styleOptCast<QStyleOptionProgressBar>(option)) {
+            // In Qt6, QStyleOptionProgressBar doesn't have orientation member
+            // Determine orientation from size - if width > height, assume horizontal
+            bool horizontal = (size.width() >= size.height());
+            bool textVisible = bar->textVisible;
+            
+            // Check if progress bar is in a status bar - use compact sizing
+            bool inStatusBar = widget && (qtcCheckType<QStatusBar>(widget->parentWidget()) ||
+                                          qtcCheckType(widget->parentWidget(), "DolphinStatusBar"));
+            
+            if (inStatusBar) {
+                // Compact sizing for status bar (similar to Breeze: 6-8px thickness)
+                const int compactThickness = 8;
+                if (horizontal) {
+                    newSize.setWidth(qMax(size.width(), compactThickness));
+                    if (textVisible) {
+                        // Match text height for proper display
+                        newSize.setHeight(qMax(compactThickness, option->fontMetrics.height()));
+                    } else {
+                        // Thin bar when no text
+                        newSize.setHeight(compactThickness);
+                    }
+                } else {
+                    newSize.setHeight(qMax(size.height(), compactThickness));
+                    newSize.setWidth(compactThickness);
+                }
+            } else {
+                // Standard sizing for normal context
+                const int standardThickness = 16;
+                if (horizontal) {
+                    newSize.setWidth(qMax(size.width(), standardThickness));
+                    newSize.setHeight(qMax(size.height(), standardThickness));
+                    if (textVisible) {
+                        newSize.setHeight(qMax(newSize.height(), option->fontMetrics.height()));
+                    }
+                } else {
+                    newSize.setHeight(qMax(size.height(), standardThickness));
+                    newSize.setWidth(qMax(size.width(), standardThickness));
+                }
+            }
+        }
+        break;
+    }
     default:
         break;
     }

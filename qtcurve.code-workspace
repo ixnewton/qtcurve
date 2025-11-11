@@ -1,0 +1,23 @@
+{
+	"folders": [
+		{
+			"path": "."
+		},
+		{
+			"path": "../../DEV-trunk/breeze-master"
+		},
+		{
+			"path": "../dolphin-master"
+		}
+	],
+	"settings": {
+		"cSpell.customDictionaries": {
+			"custom-dictionary-workspace": {
+				"name": "custom-dictionary-workspace",
+				"path": "${workspaceFolder:qtcurve}/.cspell/custom-dictionary-workspace.txt",
+				"addWords": true,
+				"scope": "workspace"
+			}
+		}
+	}
+}
