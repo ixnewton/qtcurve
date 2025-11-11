@@ -2233,12 +2233,30 @@ Style::drawControl(ControlElement element, const QStyleOption *option,
         if (auto bar = styleOptCast<QStyleOptionProgressBar>(option)) {
             QStyleOptionProgressBar mod = *bar;
 
-            if (mod.rect.height() > 16 &&
-                (qtcCheckType<QStatusBar>(widget->parentWidget()) ||
-                 qtcCheckType(widget->parentWidget(), "DolphinStatusBar"))) {
-                int m = (mod.rect.height() - 16) / 2;
-                mod.rect.adjust(0, m, 0, -m);
+            // Check if KCapacityBar is in a status bar context
+            bool inStatusBar = widget && (qtcCheckType<QStatusBar>(widget->parentWidget()) ||
+                                          qtcCheckType(widget->parentWidget(), "DolphinStatusBar"));
+            
+            if (inStatusBar) {
+                // For status bar, use compact sizing (center the bar in available space)
+                if (mod.rect.height() > 8) {
+                    int m = (mod.rect.height() - 8) / 2;
+                    mod.rect.adjust(0, m, 0, -m);
+                }
+            } else {
+                // For normal context, adjust if height is too large
+                if (mod.rect.height() > 16) {
+                    int m = (mod.rect.height() - 16) / 2;
+                    mod.rect.adjust(0, m, 0, -m);
+                }
             }
+            
+            // Ensure the progress bar is enabled and has proper state for styling
+            mod.state |= State_Enabled;
+            if (mod.progress > 0 && mod.progress <= 100) {
+                mod.state |= State_On;
+            }
+            
             drawControl(CE_ProgressBarGroove, &mod, painter, widget);
             if (opts.buttonEffect != EFFECT_NONE && opts.borderProgress)
                 mod.rect.adjust(1, 1, -1, -1);
@@ -6495,39 +6513,19 @@ QSize Style::sizeFromContents(ContentsType type, const QStyleOption *option, con
             bool horizontal = (bar->orientation == Qt::Horizontal);
             bool textVisible = bar->textVisible;
             
-            // Check if progress bar is in a status bar - use compact sizing
-            bool inStatusBar = widget && (qtcCheckType<QStatusBar>(widget->parentWidget()) ||
-                                          qtcCheckType(widget->parentWidget(), "DolphinStatusBar"));
+            // Use compact sizing universally (like Breeze) - applications may override with setFixedHeight
+            const int thickness = 8;  // Breeze uses 6px, we use 8px for slightly more visibility
             
-            if (inStatusBar) {
-                // Compact sizing for status bar (similar to Breeze: 6-8px thickness)
-                const int compactThickness = 8;
-                if (horizontal) {
-                    newSize.setWidth(qMax(size.width(), compactThickness));
-                    if (textVisible) {
-                        // Match text height for proper display
-                        newSize.setHeight(qMax(compactThickness, option->fontMetrics.height()));
-                    } else {
-                        // Thin bar when no text
-                        newSize.setHeight(compactThickness);
-                    }
-                } else {
-                    newSize.setHeight(qMax(size.height(), compactThickness));
-                    newSize.setWidth(compactThickness);
+            if (horizontal) {
+                newSize.setWidth(qMax(size.width(), thickness));
+                newSize.setHeight(qMax(size.height(), thickness));
+                if (textVisible) {
+                    // Expand height to accommodate text
+                    newSize.setHeight(qMax(newSize.height(), option->fontMetrics.height()));
                 }
             } else {
-                // Standard sizing for normal context
-                const int standardThickness = 16;
-                if (horizontal) {
-                    newSize.setWidth(qMax(size.width(), standardThickness));
-                    newSize.setHeight(qMax(size.height(), standardThickness));
-                    if (textVisible) {
-                        newSize.setHeight(qMax(newSize.height(), option->fontMetrics.height()));
-                    }
-                } else {
-                    newSize.setHeight(qMax(size.height(), standardThickness));
-                    newSize.setWidth(qMax(size.width(), standardThickness));
-                }
+                newSize.setHeight(qMax(size.height(), thickness));
+                newSize.setWidth(qMax(size.width(), thickness));
             }
         }
         break;

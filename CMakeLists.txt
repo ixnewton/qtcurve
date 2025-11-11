@@ -1,7 +1,7 @@
 ## Setup
 cmake_minimum_required(VERSION 3.16 FATAL_ERROR)
 
-project(QtCurve)
+project(Qt6Curve)
 
 include(GNUInstallDirs)
 include(FeatureSummary)
@@ -21,6 +21,13 @@ set(QTCURVE_VERSION_MINOR "9")
 set(QTCURVE_VERSION_PATCH "0-rc1")
 set(QTCURVE_VERSION "${QTCURVE_VERSION_MAJOR}.${QTCURVE_VERSION_MINOR}")
 set(QTCURVE_VERSION_FULL "${QTCURVE_VERSION}.${QTCURVE_VERSION_PATCH}")
+
+# Qt6Curve specific branding
+set(QT6CURVE_VERSION_MAJOR "${QTCURVE_VERSION_MAJOR}")
+set(QT6CURVE_VERSION_MINOR "${QTCURVE_VERSION_MINOR}")
+set(QT6CURVE_VERSION_PATCH "${QTCURVE_VERSION_PATCH}")
+set(QT6CURVE_VERSION "${QTCURVE_VERSION}")
+set(QT6CURVE_VERSION_FULL "${QTCURVE_VERSION_FULL}")
 
 find_package(Git QUIET)
 add_custom_command(OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/version.cpp"
@@ -216,7 +223,7 @@ if(ENABLE_GTK2)
     set(GTK2_LIBDIR "${GTK2_PREFIX}/lib")
   endif()
   _pkgconfig_invoke(gtk+-2.0 GTK2 BIN_VERSION "" --variable=gtk_binary_version)
-  set(GTK2_THEME_DIR ${GTK2_PREFIX}/share/themes/QtCurve)
+  set(GTK2_THEME_DIR ${GTK2_PREFIX}/share/themes/Qt6Curve)
 endif()
 
 configure_file(config.h.in config.h @ONLY)

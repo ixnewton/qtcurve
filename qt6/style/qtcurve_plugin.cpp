@@ -126,7 +126,8 @@ StylePlugin::create(const QString &key)
 
     init();
     Style *qtc;
-    if (key.toLower() == "qtcurve") {
+    QString lowerKey = key.toLower();
+    if (lowerKey == "qt6curve" || lowerKey == "qtcurve") {
         qtc = new Style;
         qtc->m_plugin = this;
         // keep track of all style instances we allocate, for instance

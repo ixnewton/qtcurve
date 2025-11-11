@@ -35,11 +35,12 @@ execute_process(COMMAND "${REAL_QMAKE_EXECUTABLE}" -query QT_INSTALL_PLUGINS
   OUTPUT_VARIABLE _Qt6_PLUGIN_INSTALL_DIR
   ERROR_QUIET OUTPUT_STRIP_TRAILING_WHITESPACE)
 set(QTCURVE_STYLE_DIR "${_Qt6_PLUGIN_INSTALL_DIR}/styles/")
+set(QT6CURVE_STYLE_DIR "${QTCURVE_STYLE_DIR}")
 
 include_directories(
   "${CMAKE_CURRENT_SOURCE_DIR}"
   "${CMAKE_CURRENT_BINARY_DIR}")
-add_definitions(-DTRANSLATION_DOMAIN=\"qtcurve\")
+add_definitions(-DTRANSLATION_DOMAIN=\"qt6curve\")
 configure_file(config-qt6.h.in config-qt6.h @ONLY)
 
 if(QTC_QT6_ENABLE_KDE)

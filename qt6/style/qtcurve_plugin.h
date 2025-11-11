@@ -31,7 +31,7 @@ class Style;
 
 class StylePlugin: public QStylePlugin {
     Q_OBJECT
-    Q_PLUGIN_METADATA(IID QStyleFactoryInterface_iid FILE "qtcurvestyle.json")
+    Q_PLUGIN_METADATA(IID QStyleFactoryInterface_iid FILE "qt6curvestyle.json")
 public:
     QStyle *create(const QString &key) override;
     ~StylePlugin();

@@ -146,9 +146,13 @@ QTC_EXPORT const char*
 getConfDir()
 {
     static uniqueStr dir = [] {
-        const char *env_home = getenv("QTCURVE_CONFIG_DIR");
+        // Check for Qt6Curve config dir first, then fall back to QtCurve for compatibility
+        const char *env_home = getenv("QT6CURVE_CONFIG_DIR");
+        if (!env_home || *env_home != '/') {
+            env_home = getenv("QTCURVE_CONFIG_DIR");
+        }
         char *res = ((env_home && *env_home == '/') ? Str::cat(env_home, "/") :
-                     Str::cat(getXDGConfigHome(), "qtcurve/"));
+                     Str::cat(getXDGConfigHome(), "qt6curve/"));
         makePath(res, 0700);
         return res;
     };

@@ -30,14 +30,18 @@ bool inStatusBar = widget && (qtcCheckType<QStatusBar>(widget->parentWidget()) |
 #### 3. Added CT_ProgressBar Case (lines ~6490-6530)
 - New case handler for progress bar sizing
 - Detects status bar context using same logic as combo boxes
-- Compact thickness: 8px (similar to Breeze's 6px)
+- Compact thickness: 8px for status bars (vs Breeze's 6px)
 - Standard thickness: 16px for normal contexts
 - Properly handles text visibility - matches font height when text is shown
+- When text is visible, height matches font height for proper display
+- When no text, uses thin 8px bar
 
-**Status Bar Sizing:**
-- Horizontal with text: `height = max(8px, fontMetrics.height())`
-- Horizontal without text: `height = 8px`
-- Maintains proper width for progress display
+#### 4. Fixed KCapacityBar Rendering (lines ~2232-2259)
+- Dolphin uses `KCapacityBar` for space info display (detected by object name `"CE_CapacityBar"`)
+- Updated `CE_QtC_KCapacityBar` to handle status bar context properly
+- Previous logic only adjusted when height > 16px, but new compact sizing uses 8px
+- Now uses 8px target for status bars, 16px for normal contexts
+- Ensures progress bar background and fill are rendered correctly in status bars
 
 ## Benefits
 

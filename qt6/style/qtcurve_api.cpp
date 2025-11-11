@@ -6489,39 +6489,19 @@ QSize Style::sizeFromContents(ContentsType type, const QStyleOption *option, con
             bool horizontal = (size.width() >= size.height());
             bool textVisible = bar->textVisible;
             
-            // Check if progress bar is in a status bar - use compact sizing
-            bool inStatusBar = widget && (qtcCheckType<QStatusBar>(widget->parentWidget()) ||
-                                          qtcCheckType(widget->parentWidget(), "DolphinStatusBar"));
+            // Use compact sizing universally (like Breeze) - applications may override with setFixedHeight
+            const int thickness = 8;  // Breeze uses 6px, we use 8px for slightly more visibility
             
-            if (inStatusBar) {
-                // Compact sizing for status bar (similar to Breeze: 6-8px thickness)
-                const int compactThickness = 8;
-                if (horizontal) {
-                    newSize.setWidth(qMax(size.width(), compactThickness));
-                    if (textVisible) {
-                        // Match text height for proper display
-                        newSize.setHeight(qMax(compactThickness, option->fontMetrics.height()));
-                    } else {
-                        // Thin bar when no text
-                        newSize.setHeight(compactThickness);
-                    }
-                } else {
-                    newSize.setHeight(qMax(size.height(), compactThickness));
-                    newSize.setWidth(compactThickness);
+            if (horizontal) {
+                newSize.setWidth(qMax(size.width(), thickness));
+                newSize.setHeight(qMax(size.height(), thickness));
+                if (textVisible) {
+                    // Expand height to accommodate text
+                    newSize.setHeight(qMax(newSize.height(), option->fontMetrics.height()));
                 }
             } else {
-                // Standard sizing for normal context
-                const int standardThickness = 16;
-                if (horizontal) {
-                    newSize.setWidth(qMax(size.width(), standardThickness));
-                    newSize.setHeight(qMax(size.height(), standardThickness));
-                    if (textVisible) {
-                        newSize.setHeight(qMax(newSize.height(), option->fontMetrics.height()));
-                    }
-                } else {
-                    newSize.setHeight(qMax(size.height(), standardThickness));
-                    newSize.setWidth(qMax(size.width(), standardThickness));
-                }
+                newSize.setHeight(qMax(size.height(), thickness));
+                newSize.setWidth(qMax(size.width(), thickness));
             }
         }
         break;

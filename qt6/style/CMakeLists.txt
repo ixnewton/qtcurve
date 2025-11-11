@@ -56,7 +56,7 @@ include_directories(
 
 add_library(qtcurve-qt6 MODULE ${qtcurve_SRCS})
 set_target_properties(qtcurve-qt6 PROPERTIES
-  OUTPUT_NAME "qtcurve"
+  OUTPUT_NAME "qt6curve"
   LIBRARY_OUTPUT_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}"
   PREFIX "")
 add_dependencies(qtcurve-qt6 qtc_qt6_check_on_hdr qtc_qt6_check_x_on_hdr
@@ -84,6 +84,6 @@ if(QTC_QT6_ENABLE_KDE)
     unset(${dir} CACHE)
   endforeach()
   include(KDEInstallDirs)
-  install(FILES qtcurve.themerc
-    DESTINATION ${KDE_INSTALL_DATADIR}/kstyle/themes)
+  install(FILES qt6curve.themerc
+    DESTINATION ${KDE_INSTALL_DATADIR}/kstyle/themes/qt6curve)
 endif()
