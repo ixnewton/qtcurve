@@ -85,5 +85,5 @@ if(QTC_QT6_ENABLE_KDE)
   endforeach()
   include(KDEInstallDirs)
   install(FILES qt6curve.themerc
-    DESTINATION ${KDE_INSTALL_DATADIR}/kstyle/themes/qt6curve)
+    DESTINATION ${KDE_INSTALL_DATADIR}/kstyle/themes)
 endif()
