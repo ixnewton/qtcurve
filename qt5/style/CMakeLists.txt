@@ -67,7 +67,7 @@ set_target_properties(qtcurve-qt5 PROPERTIES
 add_dependencies(qtcurve-qt5 qtc_qt5_check_on_hdr qtc_qt5_check_x_on_hdr
   qtc_qt5_dialog_error_hdr qtc_qt5_dialog_information_hdr
   qtc_qt5_dialog_warning_hdr)
-target_link_libraries(qtcurve-qt5 ${QTC_QT5_LINK_LIBS} qtcurve-utils)
+target_link_libraries(qtcurve-qt5 ${QTC_QT5_LINK_LIBS} qtcurve-utils-qt5)
 if(QTC_QT5_ENABLE_KDE)
   target_link_libraries(qtcurve-qt5
     KF5::ConfigCore
