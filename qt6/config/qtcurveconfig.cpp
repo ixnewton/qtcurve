@@ -50,6 +50,8 @@
 #include <QFrame>
 #include <QFileInfo>
 #include <QBoxLayout>
+#include <QLabel>
+#include <QSlider>
 #include <QTreeWidget>
 #include <QPainter>
 #include <QSettings>
@@ -252,9 +254,30 @@ CStylePreview::CStylePreview(QWidget *parent)
     for (uint i = 0; standardAction[i] != KStandardAction::ActionNone; ++i)
         actionCollection()->addAction(standardAction[i]);
     createGUI();
-    statusBar()->setSizeGripEnabled(true);
+    QMainWindow::statusBar()->setSizeGripEnabled(true);
     toolBar()->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
     setCaption(i18n("Preview Window"));
+    
+    // Add Dolphin-style status bar widgets
+    QStatusBar *sbar = QMainWindow::statusBar();
+    QLabel *statusLabel = new QLabel(i18n("cantata (folder)"), sbar);
+    sbar->addWidget(statusLabel);
+    
+    sbar->addPermanentWidget(new QLabel(i18n("Zoom:"), sbar));
+    
+    QSlider *zoomSlider = new QSlider(Qt::Horizontal, sbar);
+    zoomSlider->setMinimum(0);
+    zoomSlider->setMaximum(100);
+    zoomSlider->setValue(41);
+    zoomSlider->setMaximumWidth(150);
+    sbar->addPermanentWidget(zoomSlider);
+    
+    QComboBox *statusCombo = new QComboBox(sbar);
+    statusCombo->addItem(i18n("41.4 GiB free"));
+    statusCombo->addItem(i18n("50.2 GiB free"));
+    statusCombo->addItem(i18n("100 GiB free"));
+    sbar->addPermanentWidget(statusCombo);
+    
     // implement the exclusive nature of the items supposed to be mutually exclusive
     // This can still be done in .ui files but would have to be maintained by hand
     // as Qt's Designer no longer supports QActionGroups.

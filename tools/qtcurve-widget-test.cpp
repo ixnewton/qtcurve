@@ -71,7 +71,6 @@ public:
     }
 
 private:
-    QProgressBar *statusProgress;
     QProgressBar *animatedProgress;
     QTimer *progressTimer;
     int progressValue = 0;
@@ -138,14 +137,39 @@ private:
     void createStatusBar()
     {
         QStatusBar *status = statusBar();
-        status->showMessage("Ready");
-
-        statusProgress = new QProgressBar();
-        statusProgress->setMaximumWidth(200);
-        statusProgress->setValue(65);
-        statusProgress->setTextVisible(true);
-        status->addPermanentWidget(new QLabel("Disk Usage:"));
-        status->addPermanentWidget(statusProgress);
+        
+        // Add Dolphin-style status bar widgets
+        QLabel *statusLabel = new QLabel("cantata (folder)", status);
+        status->addWidget(statusLabel);
+        
+        status->addPermanentWidget(new QLabel("Zoom:", status));
+        
+        QSlider *zoomSlider = new QSlider(Qt::Horizontal, status);
+        zoomSlider->setMinimum(0);
+        zoomSlider->setMaximum(100);
+        zoomSlider->setValue(41);
+        zoomSlider->setMaximumWidth(150);
+        status->addPermanentWidget(zoomSlider);
+        
+        // Constrain heights like Dolphin does - use zoom slider's minimum size hint
+        const int zoomSliderHeight = zoomSlider->minimumSizeHint().height();
+        
+        // Add progress bar for disk usage
+        QProgressBar *diskProgress = new QProgressBar(status);
+        diskProgress->setMinimum(0);
+        diskProgress->setMaximum(100);
+        diskProgress->setValue(58);  // 58% used (41.4 GiB free out of ~100 GiB)
+        diskProgress->setMaximumWidth(100);
+        diskProgress->setTextVisible(false);
+        diskProgress->setFixedHeight(zoomSliderHeight);  // Match Dolphin's constraint
+        status->addPermanentWidget(diskProgress);
+        
+        QComboBox *statusCombo = new QComboBox(status);
+        statusCombo->addItem("41.4 GiB free");
+        statusCombo->addItem("50.2 GiB free");
+        statusCombo->addItem("100 GiB free");
+        statusCombo->setFixedHeight(zoomSliderHeight);  // Match Dolphin's constraint
+        status->addPermanentWidget(statusCombo);
     }
 
     QWidget* createButtonsPage()

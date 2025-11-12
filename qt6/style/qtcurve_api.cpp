@@ -2225,12 +2225,9 @@ Style::drawControl(ControlElement element, const QStyleOption *option,
         if (auto bar = styleOptCast<QStyleOptionProgressBar>(option)) {
             QStyleOptionProgressBar mod = *bar;
 
-            if (mod.rect.height() > 16 &&
-                (qtcCheckType<QStatusBar>(widget->parentWidget()) ||
-                 qtcCheckType(widget->parentWidget(), "DolphinStatusBar"))) {
-                int m = (mod.rect.height() - 16) / 2;
-                mod.rect.adjust(0, m, 0, -m);
-            }
+            // Don't artificially constrain progress bar height in status bars
+            // Let it use the full available height to match other widgets like sliders
+            
             drawControl(CE_ProgressBarGroove, &mod, painter, widget);
             if (opts.buttonEffect != EFFECT_NONE && opts.borderProgress)
                 mod.rect.adjust(1, 1, -1, -1);
@@ -3561,6 +3558,9 @@ Style::drawControl(ControlElement element, const QStyleOption *option,
                 int margin=comboBox->frame && widget && widget->rect().height()<(opts.buttonEffect != EFFECT_NONE ? 22 : 20)  ? 4 : 0;
                 editRect.adjust(1, -margin, -1, margin);
                 painter->setClipRect(editRect);
+                
+                // Font size limiting removed - text now renders at natural size
+                
                 drawItemTextWithRole(painter, editRect, Qt::AlignLeft|Qt::AlignVCenter, palette,
                                      state&State_Enabled, comboBox->currentText, QPalette::ButtonText);
             }
@@ -4361,9 +4361,37 @@ Style::drawControl(ControlElement element, const QStyleOption *option,
                     alignment |= Qt::TextHideMnemonic;
 
                 r.translate(shiftX, shiftY);
+                
+                // Check if this tool button is in Dolphin's status bar
+                bool inDolphinStatusBar = false;
+                if (widget) {
+                    const QWidget *w = widget;
+                    for (int i = 0; i < 5 && w; ++i) {
+                        w = w->parentWidget();
+                        if (w && (qtcCheckType(w, "DolphinStatusBar") || qtcCheckType(w, "StatusBarSpaceInfo"))) {
+                            inDolphinStatusBar = true;
+                            break;
+                        }
+                    }
+                }
+                
+                // Adjust font size and vertical space for Dolphin status bar
+                if (inDolphinStatusBar) {
+                    r.adjust(0, -3, 0, 3); // Expand 3px top and bottom for better text visibility
+                    
+                    // Reduce font size by 1 points
+                    QFont font = painter->font();
+                    font.setPointSizeF(font.pointSizeF());
+                    painter->save();
+                    painter->setFont(font);
+                }
 
                 drawItemTextWithRole(painter, r, alignment, palette, state&State_Enabled,
                                      tb->text, QPalette::ButtonText);
+                
+                if (inDolphinStatusBar) {
+                    painter->restore();
+                }
             } else {
                 QPixmap pm;
                 QSize   iconSize = tb->iconSize;
@@ -4426,8 +4454,37 @@ Style::drawControl(ControlElement element, const QStyleOption *option,
                         alignment |= Qt::AlignLeft | Qt::AlignVCenter;
                     }
                     tr.translate(shiftX, shiftY);
+                    
+                    // Check if this tool button is in Dolphin's status bar
+                    bool inDolphinStatusBar = false;
+                    if (widget) {
+                        const QWidget *w = widget;
+                        for (int i = 0; i < 5 && w; ++i) {
+                            w = w->parentWidget();
+                            if (w && (qtcCheckType(w, "DolphinStatusBar") || qtcCheckType(w, "StatusBarSpaceInfo"))) {
+                                inDolphinStatusBar = true;
+                                break;
+                            }
+                        }
+                    }
+                    
+                    // Adjust font size and vertical space for Dolphin status bar
+                    if (inDolphinStatusBar) {
+                        tr.adjust(0, -3, 0, 3); // Expand 1px top and bottom for better text visibility
+                        
+                        // Reduce font size by 2 points
+                        QFont font = painter->font();
+                        font.setPointSizeF(font.pointSizeF() - 2.0);
+                        painter->save();
+                        painter->setFont(font);
+                    }
+                    
                     drawItemTextWithRole(painter, QStyle::visualRect(option->direction, r, tr), alignment, palette,
                                          state & State_Enabled, tb->text, QPalette::ButtonText);
+                    
+                    if (inDolphinStatusBar) {
+                        painter->restore();
+                    }
                 }
                 else
                 {
@@ -4882,6 +4939,25 @@ void Style::drawComplexControl(ComplexControl control, const QStyleOptionComplex
 
                 tool.rect = (toolbutton->subControls&SC_ToolButtonMenu ? button.united(menuarea) : button)
                     .adjusted(leftAdjust, topAdjust, rightAdjust, bottomAdjust);
+                
+                // Check if this tool button is in Dolphin's status bar
+                bool inDolphinStatusBar = false;
+                if (widget) {
+                    const QWidget *w = widget;
+                    for (int i = 0; i < 5 && w; ++i) {
+                        w = w->parentWidget();
+                        if (w && (qtcCheckType(w, "DolphinStatusBar") || qtcCheckType(w, "StatusBarSpaceInfo"))) {
+                            inDolphinStatusBar = true;
+                            break;
+                        }
+                    }
+                }
+                
+                // Adjust frame rectangle to match text padding for Dolphin status bar
+                if (inDolphinStatusBar) {
+                    tool.rect.adjust(0, -1, 0, 1); // Expand frame by 2px top and bottom to match text padding
+                }
+                
                 tool.state = bflags|State_Horizontal;
 
                 if(raised && TBTN_JOINED==opts.tbarBtns && !horizTBar)
@@ -6505,6 +6581,10 @@ QSize Style::sizeFromContents(ContentsType type, const QStyleOption *option, con
                 newSize.setWidth(qMax(size.width(), thickness));
             }
         }
+        break;
+    }
+    case CT_Slider: {
+        // Use default slider sizing
         break;
     }
     default:

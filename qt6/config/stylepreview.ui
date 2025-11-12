@@ -540,6 +540,13 @@ Come to wash my sins away...</string>
      </widget>
     </widget>
    </item>
+   <item>
+    <widget class="QStatusBar" name="statusBar">
+     <property name="sizeGripEnabled">
+      <bool>false</bool>
+     </property>
+    </widget>
+   </item>
   </layout>
   <action name="actionRegular_item_1">
    <property name="text">
