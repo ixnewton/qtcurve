@@ -11,6 +11,14 @@ endif()
 if(QTC_QT6_ENABLE_KDE)
   list(APPEND QTC_QT6_MODULES PrintSupport)
 endif()
+# Qt >= 6.11 no longer auto-creates the private module targets when the public
+# module is found; they must be requested explicitly as components. GuiPrivate
+# provides QtGui private headers (e.g. qhighdpiscaling_p.h, qtx11extras_p.h) and
+# WidgetsPrivate provides QtWidgets private headers (e.g. qwidget_p.h).
+list(APPEND QTC_QT6_MODULES GuiPrivate WidgetsPrivate)
+if(QTC_ENABLE_X11)
+  list(APPEND QTC_QT6_MODULES CorePrivate)
+endif()
 
 add_definitions(-DQTC_UTILS_QT6 -DQTC_UTILS_QT)
 
@@ -18,9 +26,6 @@ set(QTC_QT6_ENABLE_KWIN Off)
 
 find_package(Qt6 REQUIRED COMPONENTS ${QTC_QT6_MODULES})
 list(TRANSFORM QTC_QT6_MODULES PREPEND "Qt6::" OUTPUT_VARIABLE QTC_QT6_LINK_LIBS)
-if(QTC_ENABLE_X11)
-  list(APPEND QTC_QT6_LINK_LIBS Qt6::CorePrivate)
-endif()
 foreach(QtModule ${QTC_QT6_OPT_MODULES})
   find_package(Qt6${QtModule})
   if(Qt6${QtModule}_FOUND)
