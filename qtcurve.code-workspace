@@ -1,10 +1,10 @@
 {
 	"folders": [
 		{
-			"path": "../../../KDE-trunk/qtcurve"
+			"path": "."
 		},
 		{
-			"path": "."
+			"path": "../../DEV-trunk/CxOrg-AUR/QT6Curve"
 		}
 	],
 	"settings": {}
