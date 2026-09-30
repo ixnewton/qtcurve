@@ -102,9 +102,17 @@ cmake_c_add_flags(CMAKE_C_FLAGS -Wall -Wextra -Wno-cast-align
 # We use `override` in certain Qt Classes but the QObject macro does not use it
 # Use compiler option (-Wno-inconsistent-missing-override) to suppress
 # the warning in clang++ 3.6+.
-cmake_c_add_flags(CMAKE_CXX_FLAGS -Wall -Wextra
-  -Wno-deprecated-register -Wno-cast-align
-  -Wno-inconsistent-missing-override)
+include(CheckCXXCompilerFlag)
+check_cxx_compiler_flag(-Wdeprecated-register HAVE_W_DEPRECATED_REGISTER)
+check_cxx_compiler_flag(-Winconsistent-missing-override
+  HAVE_W_INCONSISTENT_MISSING_OVERRIDE)
+cmake_c_add_flags(CMAKE_CXX_FLAGS -Wall -Wextra -Wno-cast-align)
+if(HAVE_W_DEPRECATED_REGISTER)
+  cmake_c_add_flags(CMAKE_CXX_FLAGS -Wno-deprecated-register)
+endif()
+if(HAVE_W_INCONSISTENT_MISSING_OVERRIDE)
+  cmake_c_add_flags(CMAKE_CXX_FLAGS -Wno-inconsistent-missing-override)
+endif()
 if(NOT APPLE)
   # -std=c++0x is deprecated but gcc < 4.7 do not recognise c++11 ....
   cmake_c_add_flags(CMAKE_CXX_FLAGS -std=c++17 -D_DEFAULT_SOURCE)
