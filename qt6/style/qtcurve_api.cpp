@@ -1590,7 +1590,8 @@ Style::pixelMetric(PixelMetric metric, const QStyleOption *option,
     case PM_LayoutTopMargin:
     case PM_LayoutRightMargin:
     case PM_LayoutBottomMargin:
-        return 10;
+        return ((option && (option->state & State_Window)) ||
+                (widget && widget->isWindow())) ? 10 : 6;
     case PM_MenuBarItemSpacing:
         return 0;
     case PM_ToolBarItemMargin:
