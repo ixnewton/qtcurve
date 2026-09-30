@@ -2227,13 +2227,15 @@ Style::drawControl(ControlElement element, const QStyleOption *option,
             QStyleOptionProgressBar mod = *bar;
 
             // Don't artificially constrain progress bar height in status bars
-            // Let it use the full available height to match other widgets like sliders
-            
+            // Let it use the full available height to match other widgets like
+            // sliders. The groove etch/border insets would shrink the drawn
+            // bar below the adjacent text height, so draw it flat.
+            bool borderProgress = opts.borderProgress;
+            opts.borderProgress = false;
             drawControl(CE_ProgressBarGroove, &mod, painter, widget);
-            if (opts.buttonEffect != EFFECT_NONE && opts.borderProgress)
-                mod.rect.adjust(1, 1, -1, -1);
             drawControl(CE_ProgressBarContents, &mod, painter, widget);
             drawControl(CE_ProgressBarLabel, &mod, painter, widget);
+            opts.borderProgress = borderProgress;
         }
         break;
     case CE_ToolBoxTabShape: {
