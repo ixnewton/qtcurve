@@ -24,6 +24,7 @@
 #include <qtcurve-utils/color.h>
 #include "common.h"
 #include "config_file.h"
+#include "config-qt6.h"
 
 #include <qglobal.h>
 #include <QMap>
@@ -1120,6 +1121,8 @@ bool qtcReadConfig(const QString &file, Options *opts, Options *defOpts, bool ch
 
                 if(!QFile::exists(filename))
                     filename = QFile::decodeName(cfgDir) + "../" OLD_CONFIG_FILE;
+                if(!QFile::exists(filename))
+                    filename = QFile::decodeName(QTC_SYSTEM_CONFIG_FILE);
                 return qtcReadConfig(filename, opts, defOpts);
             }
         }

@@ -22,4 +22,6 @@
 #ifndef __QTC_CONFIG_QT6_H__
 #define __QTC_CONFIG_QT6_H__
 
+#define QTC_SYSTEM_CONFIG_FILE "@CMAKE_INSTALL_FULL_DATADIR@/qt6curve/stylerc"
+
 #endif

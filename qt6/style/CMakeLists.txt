@@ -86,4 +86,7 @@ if(QTC_QT6_ENABLE_KDE)
   include(KDEInstallDirs)
   install(FILES qt6curve.themerc
     DESTINATION ${KDE_INSTALL_DATADIR}/kstyle/themes)
+  install(FILES "${CMAKE_CURRENT_SOURCE_DIR}/../../stylerc.default"
+    DESTINATION ${KDE_INSTALL_DATADIR}/qt6curve
+    RENAME stylerc)
 endif()
