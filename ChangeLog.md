@@ -9,6 +9,9 @@
    zero height and clipping their contents. Checkbox contents sizing now
    handles plain style options, so such dialogs initialize at their intended
    height.
+4. Use Breeze's child layout margins (6px inside windows, 10px for top-level
+   dialogs). This fixes the disk usage selector text in the Dolphin status
+   bar being clipped.
 
 ## 1.9.0
 1. Fix shadow color
