@@ -1164,7 +1164,7 @@ int Style::layoutSpacing(QSizePolicy::ControlType control1,
     Q_UNUSED(orientation);
     Q_UNUSED(option);
     Q_UNUSED(widget);
-    return 4;
+    return 6;
 }
 
 // Use 'drawItemTextWithRole' when already know which role to use.

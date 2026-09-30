@@ -1585,7 +1585,7 @@ Style::pixelMetric(PixelMetric metric, const QStyleOption *option,
     case PM_DefaultChildMargin:
         return isOOWidget(widget) ? 2 : 6;
     case PM_DefaultTopLevelMargin:
-        return 9;
+        return 10;
     case PM_LayoutHorizontalSpacing:
     case PM_LayoutVerticalSpacing:
         return -1; // use layoutSpacing
@@ -1641,6 +1641,8 @@ Style::pixelMetric(PixelMetric metric, const QStyleOption *option,
     case PM_ButtonDefaultIndicator:
         return 0;
     case PM_DefaultFrameWidth:
+        if (widget && qobject_cast<const QLineEdit *>(widget))
+            return constLineEditFrameWidth;
         if (opts.gtkComboMenus &&
             qtcCheckType(widget,"QComboBoxPrivateContainer")) {
             return (opts.gtkComboMenus ?

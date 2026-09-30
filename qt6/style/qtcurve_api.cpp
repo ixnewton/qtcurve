@@ -1590,7 +1590,7 @@ Style::pixelMetric(PixelMetric metric, const QStyleOption *option,
     case PM_LayoutTopMargin:
     case PM_LayoutRightMargin:
     case PM_LayoutBottomMargin:
-        return 9;
+        return 10;
     case PM_MenuBarItemSpacing:
         return 0;
     case PM_ToolBarItemMargin:
@@ -1633,6 +1633,8 @@ Style::pixelMetric(PixelMetric metric, const QStyleOption *option,
     case PM_ButtonDefaultIndicator:
         return 0;
     case PM_DefaultFrameWidth:
+        if (widget && qobject_cast<const QLineEdit *>(widget))
+            return constLineEditFrameWidth;
         if (opts.gtkComboMenus &&
             qtcCheckType(widget,"QComboBoxPrivateContainer")) {
             return (opts.gtkComboMenus ?
