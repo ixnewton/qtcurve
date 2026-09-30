@@ -12,6 +12,8 @@
 4. Use Breeze's child layout margins (6px inside windows, 10px for top-level
    dialogs). This fixes the disk usage selector text in the Dolphin status
    bar being clipped.
+5. Draw the disk usage capacity bar at its full height so it matches the
+   adjacent text in the Dolphin status bar.
 
 ## 1.9.0
 1. Fix shadow color
