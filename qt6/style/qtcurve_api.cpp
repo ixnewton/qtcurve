@@ -2228,11 +2228,12 @@ Style::drawControl(ControlElement element, const QStyleOption *option,
 
             // Don't artificially constrain progress bar height in status bars
             // Let it use the full available height to match other widgets like sliders
-            // Center a fixed-thickness bar in the widget, as Breeze does with
-            // Metrics::ProgressBar_Thickness, using QtCurve's own 8px thickness.
+            // Center a bar as wide as the configured scrollbar, as Breeze does
+            // with Metrics::ProgressBar_Thickness.
+            const int thickness = pixelMetric(PM_ScrollBarExtent, option, widget);
             mod.rect = QRect(mod.rect.x(),
-                             mod.rect.y() + (mod.rect.height() - 8) / 2,
-                             mod.rect.width(), 8);
+                             mod.rect.y() + (mod.rect.height() - thickness) / 2,
+                             mod.rect.width(), thickness);
             drawControl(CE_ProgressBarGroove, &mod, painter, widget);
             if (opts.buttonEffect != EFFECT_NONE && opts.borderProgress)
                 mod.rect.adjust(1, 1, -1, -1);
@@ -6578,7 +6579,7 @@ QSize Style::sizeFromContents(ContentsType type, const QStyleOption *option, con
             bool textVisible = bar->textVisible;
             
             // Use compact sizing universally (like Breeze) - applications may override with setFixedHeight
-            const int thickness = 8;  // Breeze uses 6px, we use 8px for slightly more visibility
+            const int thickness = pixelMetric(PM_ScrollBarExtent, option, widget);
             
             if (horizontal) {
                 newSize.setWidth(qMax(size.width(), thickness));
