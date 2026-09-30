@@ -1,3 +1,15 @@
+## 1.9.0-rc1 (Qt6Curve)
+1. Only add clang-only warning flags (`-Wno-deprecated-register`,
+   `-Wno-inconsistent-missing-override`) when the compiler supports them.
+   This silences `cc1plus: unrecognized command-line option` warnings on GCC.
+2. Match Breeze layout spacing (6px) and dialog margins (10px) so dialogs are
+   not cramped.
+3. Fix collapsed `KCollapsibleGroupBox` sections (for example the
+   "Compress to Archive" dialog in Dolphin, Krusader and Ark) launching with
+   zero height and clipping their contents. Checkbox contents sizing now
+   handles plain style options, so such dialogs initialize at their intended
+   height.
+
 ## 1.9.0
 1. Fix shadow color
    [QtCurve-Bug](https://github.com/QtCurve/qtcurve/issues/54)
