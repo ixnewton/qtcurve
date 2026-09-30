@@ -45,7 +45,6 @@ static const int constMenuPixmapWidth = 22;
 static const int constWindowMargin = 2;
 static const int constProgressBarFps = 20;
 static const int constTabPad = 6;
-static const int constLineEditFrameWidth = 6;
 
 static const QLatin1String constDwtClose("qt_dockwidget_closebutton");
 static const QLatin1String constDwtFloat("qt_dockwidget_floatbutton");

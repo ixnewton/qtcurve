@@ -1633,8 +1633,6 @@ Style::pixelMetric(PixelMetric metric, const QStyleOption *option,
     case PM_ButtonDefaultIndicator:
         return 0;
     case PM_DefaultFrameWidth:
-        if (widget && qobject_cast<const QLineEdit *>(widget))
-            return constLineEditFrameWidth;
         if (opts.gtkComboMenus &&
             qtcCheckType(widget,"QComboBoxPrivateContainer")) {
             return (opts.gtkComboMenus ?
@@ -6340,6 +6338,12 @@ QSize Style::sizeFromContents(ContentsType type, const QStyleOption *option, con
 
             newSize += QSize(w + margins, 4);
             newSize.setHeight(qMax(newSize.height(), h));
+        } else {
+            newSize.rheight() += 4;
+            newSize.setHeight(qMax(newSize.height(),
+                                   option->fontMetrics.height() + 4));
+            newSize.setHeight(qMax(newSize.height(),
+                                   pixelMetric(PM_IndicatorHeight, option, widget)));
         }
         break;
     case CT_ScrollBar:
